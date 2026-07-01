@@ -128,3 +128,63 @@
     @apply font-sans;
   }
 }
+
+.editor-content li[role="checkbox"] {
+  list-style: none !important;
+  position: relative;
+  padding-left: 1.8rem;
+  cursor: pointer;
+}
+
+.editor-content li[role="checkbox"]::before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.editor-content li[aria-checked="true"]::before {
+  content: "☑";
+}
+
+.editor-content li[aria-checked="true"] {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.editor-content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  /* CRITICAL FIX */
+  display: block;
+  width: 100%;
+  max-width: 100%;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  white-space: pre; /* keeps formatting */
+  word-wrap: normal;
+}
+
+.editor-font-arial {
+  font-family: Arial, sans-serif;
+}
+
+.editor-font-courier {
+  font-family: "Courier New", monospace;
+}
+
+.editor-font-times {
+  font-family: "Times New Roman", serif;
+}
+
+.editor-font-verdana {
+  font-family: Verdana, sans-serif;
+}
