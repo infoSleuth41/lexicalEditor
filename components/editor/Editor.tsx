@@ -12,6 +12,11 @@ import { LinkNode } from "@lexical/link";
 import { TextNode } from "lexical";
 import { PageSizeProvider } from "./PageSizeContext";
 import { EditorProvider } from "./EditorContext";
+import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
+import { TableNode, TableCellNode, TableRowNode } from "@lexical/table";
+import { ImageNode } from "../toolbar/ImageNode";
+import { PollNode } from "../toolbar/PollNode";
+
 
 const initialConfig: InitialConfigType = {
     namespace: "Editor",
@@ -25,6 +30,12 @@ const initialConfig: InitialConfigType = {
         LinkNode,
         CodeNode,
         TextNode,
+        HorizontalRuleNode,
+        TableNode,
+        TableCellNode,
+        TableRowNode,
+        ImageNode,
+        PollNode,
     ],
 
     onError(error: Error) {

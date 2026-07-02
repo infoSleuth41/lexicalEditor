@@ -16,6 +16,7 @@ import Alignment from "./Alignment";
 import PageSize from "./PageSize"
 import DownloadPDF from "./DownloadPdf";
 import DownloadDocx from "./DownloadDocx";
+import Insert from "./Insert";
 
 export default function Toolbar() {
     return (
@@ -48,6 +49,9 @@ export default function Toolbar() {
                 <Separator orientation="vertical" className="h-8" />
 
                 <Alignment />
+                <Separator orientation="vertical" className="h-8" />
+
+                <Insert/>
                 <Separator orientation="vertical" className="h-8" />
 
                 <DownloadPDF />

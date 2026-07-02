@@ -27,6 +27,18 @@ const theme = {
             listitem: "ml-4",
         },
     },
+
+    table: "border-collapse border border-border my-4 w-full",
+    tableRow: "border-b border-border",
+    tableCell: "border border-border px-3 py-2 align-top min-w-[80px]",
+    tableCellHeader: "border border-border px-3 py-2 align-top bg-muted font-semibold text-left",
+    tableSelected: "outline outline-2 outline-primary",
+    tableCellSelected: "bg-primary/10",
+
+    hr: "my-4 border-t border-border",
+
+    image: "my-2",
+    poll: "my-2",
 };
 
 export default theme;

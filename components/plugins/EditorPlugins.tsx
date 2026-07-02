@@ -15,6 +15,9 @@ import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
 import { usePageSize } from "../editor/PageSizeContext";
+import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
+import ImagesPlugin from "./ImagesPlugin"
+import PollPlugin from "./PollPlugin"
 
 const PAGE_GAP = 0;
 const CANVAS_BG = "#b0b7c3";
@@ -127,6 +130,13 @@ function PagedEditor({
                 <ClickableLinkPlugin />
                 <EditorAutoFocusPlugin />
                 <EditorOnChangePlugin />
+                <TablePlugin
+                    hasCellMerge={true}
+                    hasCellBackgroundColor={true}
+                    hasHorizontalScroll={true}
+                />
+                <ImagesPlugin />
+                <PollPlugin />
             </div>
         </div>
     );
@@ -152,6 +162,13 @@ export default function EditorPlugins() {
                 <ClickableLinkPlugin />
                 <EditorAutoFocusPlugin />
                 <EditorOnChangePlugin />
+                <TablePlugin
+                    hasCellMerge={true}
+                    hasCellBackgroundColor={true}
+                    hasHorizontalScroll={true}
+                />
+                <ImagesPlugin />
+                <PollPlugin />
             </div>
         );
     }
