@@ -18,6 +18,7 @@ import { usePageSize } from "../editor/PageSizeContext";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import ImagesPlugin from "./ImagesPlugin"
 import PollPlugin from "./PollPlugin"
+import TableActionMenuPlugin from "./Tableactionmenuplugin";
 
 const PAGE_GAP = 0;
 const CANVAS_BG = "#b0b7c3";
@@ -137,6 +138,7 @@ function PagedEditor({
                 />
                 <ImagesPlugin />
                 <PollPlugin />
+                <TableActionMenuPlugin />
             </div>
         </div>
     );
@@ -150,7 +152,7 @@ export default function EditorPlugins() {
             <div className="relative mx-auto max-w-4xl">
                 <RichTextPlugin
                     contentEditable={
-                        <ContentEditable className="editor-content min-h-[500px] p-4 outline-none" />
+                        <ContentEditable className="editor-content min-h-125 p-4 outline-none" />
                     }
                     placeholder={<Placeholder />}
                     ErrorBoundary={LexicalErrorBoundary}
@@ -169,6 +171,7 @@ export default function EditorPlugins() {
                 />
                 <ImagesPlugin />
                 <PollPlugin />
+                <TableActionMenuPlugin />
             </div>
         );
     }

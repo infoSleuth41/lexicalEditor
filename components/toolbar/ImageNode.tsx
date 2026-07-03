@@ -10,7 +10,7 @@ import type {
 } from "lexical";
 
 import { DecoratorNode, createCommand, type LexicalCommand } from "lexical";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { $getNodeByKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
@@ -36,6 +36,21 @@ export type SerializedImageNode = Spread<
     SerializedLexicalNode
 >;
 
+const MIN_WIDTH = 80;
+
+type Corner = "nw" | "ne" | "sw" | "se";
+
+/** Finds how wide the image is allowed to get — the usable content width
+ * of the nearest `.editor-content` ancestor (its box minus its own padding),
+ * so a resize can never push the image past the page/margins. */
+function getMaxWidth(el: HTMLElement): number {
+    const container = el.closest<HTMLElement>(".editor-content");
+    if (!container) return Infinity;
+    const style = window.getComputedStyle(container);
+    const paddingX = parseFloat(style.paddingLeft || "0") + parseFloat(style.paddingRight || "0");
+    return Math.max(MIN_WIDTH, container.clientWidth - paddingX);
+}
+
 function ImageComponent({
     src,
     altText,
@@ -49,6 +64,9 @@ function ImageComponent({
 }) {
     const [editor] = useLexicalComposerContext();
     const [selected, setSelected] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
+    const resizingRef = useRef(false);
 
     const handleDelete = () => {
         editor.update(() => {
@@ -57,29 +75,116 @@ function ImageComponent({
         });
     };
 
+    const commitWidth = (finalWidth: number) => {
+        editor.update(() => {
+            const node = $getNodeByKey(nodeKey);
+            if (node instanceof ImageNode) {
+                node.setWidth(Math.round(finalWidth));
+            }
+        });
+    };
+
+    const startResize = (e: React.PointerEvent, corner: Corner) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const img = imgRef.current;
+        if (!img) return;
+
+        resizingRef.current = true;
+        const startX = e.clientX;
+        const startWidth = img.getBoundingClientRect().width;
+        const maxWidth = getMaxWidth(img);
+        const sign = corner === "ne" || corner === "se" ? 1 : -1;
+
+        const handleMove = (moveEvent: PointerEvent) => {
+            if (!resizingRef.current) return;
+            const deltaX = (moveEvent.clientX - startX) * sign;
+            const newWidth = Math.min(maxWidth, Math.max(MIN_WIDTH, startWidth + deltaX));
+            img.style.width = `${newWidth}px`;
+        };
+
+        const handleUp = () => {
+            resizingRef.current = false;
+            window.removeEventListener("pointermove", handleMove);
+            window.removeEventListener("pointerup", handleUp);
+            const finalWidth = img.getBoundingClientRect().width;
+            commitWidth(finalWidth);
+        };
+
+        window.addEventListener("pointermove", handleMove);
+        window.addEventListener("pointerup", handleUp);
+    };
+
+    // Deselect when clicking elsewhere.
+    useEffect(() => {
+        if (!selected) return;
+        const handleDocClick = (e: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setSelected(false);
+            }
+        };
+        document.addEventListener("mousedown", handleDocClick);
+        return () => document.removeEventListener("mousedown", handleDocClick);
+    }, [selected]);
+
+    const handleClasses =
+        "absolute h-3 w-3 rounded-full border-2 border-primary bg-background z-10";
+
     return (
         <div
-            className="group relative inline-block max-w-full"
-            onClick={() => setSelected((s) => !s)}
+            ref={wrapperRef}
+            className="group relative inline-block max-w-full select-none"
+            onClick={(e) => {
+                e.stopPropagation();
+                setSelected((s) => !s);
+            }}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+                ref={imgRef}
                 src={src}
                 alt={altText}
                 style={width ? { width } : undefined}
                 className={`max-w-full rounded-md ${selected ? "ring-2 ring-primary" : ""}`}
                 draggable={false}
             />
+
             <button
                 type="button"
                 onClick={(e) => {
                     e.stopPropagation();
                     handleDelete();
                 }}
+                contentEditable={false}
                 className="absolute right-2 top-2 hidden rounded-md bg-black/60 px-2 py-1 text-xs text-white group-hover:block"
             >
                 Remove
             </button>
+
+            {selected && (
+                <>
+                    <div
+                        onPointerDown={(e) => startResize(e, "nw")}
+                        className={`${handleClasses} -left-1.5 -top-1.5 cursor-nwse-resize`}
+                        contentEditable={false}
+                    />
+                    <div
+                        onPointerDown={(e) => startResize(e, "ne")}
+                        className={`${handleClasses} -right-1.5 -top-1.5 cursor-nesw-resize`}
+                        contentEditable={false}
+                    />
+                    <div
+                        onPointerDown={(e) => startResize(e, "sw")}
+                        className={`${handleClasses} -left-1.5 -bottom-1.5 cursor-nesw-resize`}
+                        contentEditable={false}
+                    />
+                    <div
+                        onPointerDown={(e) => startResize(e, "se")}
+                        className={`${handleClasses} -right-1.5 -bottom-1.5 cursor-nwse-resize`}
+                        contentEditable={false}
+                    />
+                </>
+            )}
         </div>
     );
 }
@@ -137,6 +242,11 @@ export class ImageNode extends DecoratorNode<React.ReactNode> {
         this.__altText = altText;
         this.__width = width;
         this.__height = height;
+    }
+
+    setWidth(width: number): void {
+        const writable = this.getWritable();
+        writable.__width = width;
     }
 
     createDOM(config: EditorConfig): HTMLElement {

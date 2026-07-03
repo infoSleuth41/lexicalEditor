@@ -118,11 +118,6 @@ export default function Insert() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuItem onSelect={handleInsertHorizontalRule} className="gap-2">
-                        <Minus className="h-4 w-4" />
-                        Horizontal Rule
-                    </DropdownMenuItem>
-
                     <DropdownMenuItem onSelect={() => setDialogMode("image")} className="gap-2">
                         <ImageIcon className="h-4 w-4" />
                         Image

@@ -13,22 +13,20 @@ import TextColor from "./TextColor";
 import Background from "./Background";
 import Formatting from "./Formatting";
 import Alignment from "./Alignment";
-import PageSize from "./PageSize"
+import PageSize from "./PageSize";
 import DownloadPDF from "./DownloadPdf";
 import DownloadDocx from "./DownloadDocx";
 import Insert from "./Insert";
 
 export default function Toolbar() {
     return (
-        <div className="w-full border-b">
-            <div className="flex items-center gap-1 p-2 overflow-x-auto whitespace-nowrap">
+        <div className="w-full border-b bg-background">
+            <div className="flex w-full flex-wrap items-center gap-x-2 gap-y-2 p-2">
                 <UndoRedo />
                 <Separator orientation="vertical" className="h-8" />
 
-
                 <BlockType />
                 <Separator orientation="vertical" className="h-8" />
-
 
                 <FontFamily />
                 <Separator orientation="vertical" className="h-8" />
@@ -51,7 +49,7 @@ export default function Toolbar() {
                 <Alignment />
                 <Separator orientation="vertical" className="h-8" />
 
-                <Insert/>
+                <Insert />
                 <Separator orientation="vertical" className="h-8" />
 
                 <DownloadPDF />
