@@ -83,23 +83,10 @@ function PagedEditor({
                     }}
                 />
 
-                {/* ── 1px border at bottom of each page ── */}
-                <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0"
-                    style={{
-                        backgroundImage: `repeating-linear-gradient(
-                            to bottom,
-                            transparent 0px,
-                            transparent ${pageHeightPx - 1}px,
-                            #c0c0c0     ${pageHeightPx - 1}px,
-                            #c0c0c0     ${pageHeightPx}px,
-                            transparent ${pageHeightPx}px,
-                            transparent ${cycle}px
-                        )`,
-                        backgroundSize: `100% ${cycle}px`,
-                    }}
-                />
+                {/* NOTE: the 1px gray border-per-page overlay was removed here.
+                    It previously drew a #c0c0c0 line at the bottom of every
+                    page. The white/gray canvas bands above already imply the
+                    page break, so no extra divider line is drawn now. */}
 
                 {/* ── editable content ── */}
                 <RichTextPlugin

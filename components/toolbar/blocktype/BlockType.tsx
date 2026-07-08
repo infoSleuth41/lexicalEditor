@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isRangeSelection } from "lexical";
+import { $isRangeSelection, LexicalNode } from "lexical";
 import { useEffect } from "react";
 
 import {
@@ -22,6 +22,8 @@ import {
     INSERT_ORDERED_LIST_COMMAND,
     INSERT_CHECK_LIST_COMMAND,
     REMOVE_LIST_COMMAND,
+    $isListNode,
+    ListNode,
 } from "@lexical/list";
 
 import { $createCodeNode } from "@lexical/code";
@@ -31,6 +33,23 @@ import {
 } from "@lexical/rich-text";
 
 import { $createParagraphNode } from "lexical";
+
+// Walks backward through sibling top-level blocks (skipping tables,
+// paragraphs, headings, other bullet lists, etc.) to find the nearest
+// previous ORDERED list. Returns the number the new list should start at
+// so numbering continues instead of resetting to 1.
+function getContinuedStartNumber(node: LexicalNode | null): number {
+    let prev = node;
+
+    while (prev) {
+        if ($isListNode(prev) && prev.getListType() === "number") {
+            return prev.getStart() + prev.getChildrenSize();
+        }
+        prev = prev.getPreviousSibling();
+    }
+
+    return 1;
+}
 
 export default function BlockType() {
     const [editor] = useLexicalComposerContext();
@@ -61,9 +80,43 @@ export default function BlockType() {
                 editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
                 return;
 
-            case "number":
+            case "number": {
+                // Figure out where numbering should continue from
+                // BEFORE we insert the new list, based on current selection.
+                let startNumber = 1;
+
+                editor.getEditorState().read(() => {
+                    const selection = $getSelection();
+                    if (!$isRangeSelection(selection)) return;
+
+                    const topLevel = selection
+                        .anchor.getNode()
+                        .getTopLevelElementOrThrow();
+
+                    startNumber = getContinuedStartNumber(
+                        topLevel.getPreviousSibling()
+                    );
+                });
+
                 editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+
+                // After Lexical creates the new list node, override its
+                // start value so it continues instead of resetting to 1.
+                editor.update(() => {
+                    const selection = $getSelection();
+                    if (!$isRangeSelection(selection)) return;
+
+                    const topLevel = selection
+                        .anchor.getNode()
+                        .getTopLevelElementOrThrow();
+
+                    if ($isListNode(topLevel)) {
+                        (topLevel as ListNode).setStart(startNumber);
+                    }
+                });
+
                 return;
+            }
 
             case "check":
                 editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);

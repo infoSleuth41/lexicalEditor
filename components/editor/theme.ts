@@ -42,7 +42,7 @@ const theme = {
     listitemUnchecked: "",
 
     nested: {
-      listitem: "ml-5",
+      listitem: "list-none",
     },
   },
 
