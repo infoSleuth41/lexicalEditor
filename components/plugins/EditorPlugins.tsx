@@ -12,6 +12,7 @@ import EditorOnChangePlugin from "./OnChangePlugin";
 import PageBreakPlugin from "./PageBreakPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
 import { usePageSize } from "../editor/PageSizeContext";
@@ -127,6 +128,7 @@ function PagedEditor({
                 <EditorHistoryPlugin />
                 <ListPlugin />
                 <CheckListPlugin />
+                <TabIndentationPlugin maxIndent={7} />
                 <LinkPlugin />
                 <ClickableLinkPlugin />
                 <EditorAutoFocusPlugin />
@@ -160,6 +162,7 @@ export default function EditorPlugins() {
                 <EditorHistoryPlugin />
                 <ListPlugin />
                 <CheckListPlugin />
+                <TabIndentationPlugin maxIndent={7} />
                 <LinkPlugin />
                 <ClickableLinkPlugin />
                 <EditorAutoFocusPlugin />
